@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#9b59b6">
-    <meta name="description" content="Encontre os melhores brechós em Carapicuíba e região">
-    <link rel="manifest" href="manifest.json">
+    <meta name="description" content="Encontre brechós em Carapicuíba e região">
     <title>Brechós Carapicuíba</title>
+    
+    <!-- PWA -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQnJlY2jDs3MgQ2FyYXBpY3XDrWJhIiwic2hvcnRfbmFtZSI6IkJyZWNow7NzIiwidGhlbWVfY29sb3IiOiIjOWI1OWI2IiwiYmFja2dyb3VuZF9jb2xvciI6IiNmOGY1ZmYiLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsInN0YXJ0X3VybCI6Ii8iLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxOTInIGhlaWdodD0nMTkyJyB2aWV3Qm94PScwIDAgMTkyIDE5Mic+JTNDcmVjdCBmaWxsPSclMjM5YjU5YjYnIHdpZHRoPScxOTInIGhlaWdodD0nMTkyJy8+JTNDdGV4dCBmaWxsPSclMjNmZmZmZmYnIGZvbnQtc2l6ZT0nMTAwJyB4PSc1MCUyNScgeT0nNTAlMjUnIGR5PScuMzVlbScgZm9udC1mYW1pbHk9J0FyaWFsJz7wn5SWJTNDL3RleHQ+JTNDL3N2Zz4iLCJzaXplcyI6IjE5MngxOTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
     
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
@@ -18,89 +20,98 @@
             box-sizing: border-box;
         }
         
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #b19cd9 0%, #9b59b6 100%);
-            min-height: 100vh;
+        :root {
+            --primary-purple: #9b59b6;
+            --light-purple: #c39bd3;
+            --lighter-purple: #f8f5ff;
+            --dark-purple: #7d3c98;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --border-color: #e8e8e8;
+            --success: #27ae60;
         }
         
-        .container {
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--lighter-purple) 0%, #ffffff 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-purple) 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
             max-width: 1400px;
             margin: 0 auto;
         }
         
-        .header {
-            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
         .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
         
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.95;
-        }
-        
-        .search-section {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 25px;
-            margin: 20px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .search-box {
+        .search-container {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             flex-wrap: wrap;
         }
         
         .search-input {
             flex: 1;
             min-width: 250px;
-            padding: 15px 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 12px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
             font-size: 1rem;
+            background: rgba(255, 255, 255, 0.95);
             transition: all 0.3s ease;
         }
         
         .search-input:focus {
             outline: none;
-            border-color: #9b59b6;
-            box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.1);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
         }
         
         .search-btn {
-            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-            color: white;
+            padding: 12px 30px;
+            background: white;
+            color: var(--primary-purple);
             border: none;
-            padding: 15px 35px;
-            border-radius: 12px;
-            font-size: 1rem;
+            border-radius: 25px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 1rem;
         }
         
         .search-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(155, 89, 182, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
         
-        .map-container {
-            margin: 20px;
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .map-section {
             background: white;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            border: 3px solid var(--light-purple);
         }
         
         #map {
@@ -108,110 +119,144 @@
             width: 100%;
         }
         
-        .results-section {
-            margin: 20px;
-        }
-        
         .results-header {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 15px 15px 0 0;
-            color: #8e44ad;
-            font-size: 1.3rem;
-            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid var(--primary-purple);
         }
         
-        .cards-container {
+        .results-count {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-purple);
+        }
+        
+        .filter-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-tag {
+            padding: 6px 12px;
+            background: var(--lighter-purple);
+            color: var(--primary-purple);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 20px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 0 0 15px 15px;
+            margin-bottom: 30px;
         }
         
         .brecho-card {
             background: white;
             border-radius: 12px;
             padding: 20px;
-            border-left: 5px solid #9b59b6;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid var(--primary-purple);
             transition: all 0.3s ease;
-            display: none;
-        }
-        
-        .brecho-card.visible {
-            display: block;
+            cursor: pointer;
         }
         
         .brecho-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(155, 89, 182, 0.2);
+            box-shadow: 0 8px 20px rgba(155, 89, 182, 0.25);
+            border-left-width: 8px;
         }
         
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: start;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         
         .card-title {
-            font-size: 1.4rem;
-            color: #8e44ad;
+            font-size: 1.3rem;
             font-weight: 700;
-            flex: 1;
+            color: var(--primary-purple);
+            margin-bottom: 5px;
         }
         
         .rating {
             display: flex;
             align-items: center;
             gap: 5px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #f39c12;
             font-weight: 600;
         }
         
         .card-info {
             margin: 10px 0;
-            color: #555;
-            line-height: 1.8;
         }
         
-        .card-info-item {
+        .info-item {
             display: flex;
             align-items: start;
-            margin: 8px 0;
             gap: 10px;
+            margin: 8px 0;
+            font-size: 0.95rem;
+            color: var(--text-dark);
         }
         
-        .icon {
-            color: #9b59b6;
-            font-weight: bold;
+        .info-icon {
+            color: var(--primary-purple);
+            font-weight: 600;
             min-width: 20px;
         }
         
         .badge {
             display: inline-block;
-            background: linear-gradient(135deg, #b19cd9 0%, #9b59b6 100%);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            margin: 5px 5px 5px 0;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
             font-weight: 600;
+            margin: 5px 5px 5px 0;
+        }
+        
+        .badge-donation {
+            background: #e8f5e9;
+            color: var(--success);
+        }
+        
+        .badge-exchange {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .badge-new {
+            background: #e3f2fd;
+            color: #1976d2;
         }
         
         .price-range {
-            background: #f8f4fc;
+            font-weight: 600;
+            color: var(--primary-purple);
+            font-size: 1.1rem;
+            margin: 10px 0;
+        }
+        
+        .schedule {
+            background: var(--lighter-purple);
             padding: 10px;
             border-radius: 8px;
             margin: 10px 0;
-            color: #8e44ad;
-            font-weight: 600;
+            font-size: 0.9rem;
         }
         
-        .contact-btns {
+        .contact-buttons {
             display: flex;
             gap: 10px;
             margin-top: 15px;
@@ -219,65 +264,79 @@
         }
         
         .contact-btn {
-            flex: 1;
-            min-width: 120px;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
             font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
         }
         
-        .whatsapp-btn {
-            background: #25D366;
+        .btn-whatsapp {
+            background: #25d366;
             color: white;
         }
         
-        .whatsapp-btn:hover {
-            background: #1fb855;
-            transform: translateY(-2px);
-        }
-        
-        .website-btn {
-            background: #9b59b6;
+        .btn-phone {
+            background: var(--primary-purple);
             color: white;
         }
         
-        .website-btn:hover {
-            background: #8e44ad;
+        .btn-website {
+            background: var(--light-purple);
+            color: white;
+        }
+        
+        .contact-btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
         .no-results {
             text-align: center;
-            padding: 40px;
-            color: #666;
-            font-size: 1.1rem;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .no-results-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .no-results h2 {
+            color: var(--text-light);
+            margin-bottom: 10px;
         }
         
         .leaflet-popup-content-wrapper {
             border-radius: 12px;
-            padding: 5px;
+            border-left: 4px solid var(--primary-purple);
         }
         
         .popup-content {
-            max-width: 300px;
+            padding: 5px;
         }
         
         .popup-title {
-            font-size: 1.2rem;
-            color: #8e44ad;
+            font-size: 1.1rem;
             font-weight: 700;
-            margin-bottom: 10px;
+            color: var(--primary-purple);
+            margin-bottom: 8px;
         }
         
         @media (max-width: 768px) {
             .header h1 {
-                font-size: 2rem;
+                font-size: 1.4rem;
             }
             
-            .search-box {
+            .search-container {
                 flex-direction: column;
             }
             
@@ -285,207 +344,271 @@
                 min-width: 100%;
             }
             
-            .cards-container {
+            .cards-grid {
                 grid-template-columns: 1fr;
             }
             
             #map {
-                height: 400px;
+                height: 350px;
+            }
+            
+            .results-header {
+                flex-direction: column;
+                align-items: start;
+                gap: 10px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🛍️ Brechós em Carapicuíba</h1>
-            <p>Encontre os melhores brechós da região com moda sustentável</p>
-        </div>
-        
-        <div class="search-section">
-            <div class="search-box">
+    <div class="header">
+        <div class="header-content">
+            <h1>🛍️ Brechós em Carapicuíba e Região</h1>
+            <div class="search-container">
                 <input 
                     type="text" 
-                    id="searchInput" 
                     class="search-input" 
-                    placeholder="Buscar por nome, bairro ou características (ex: doações, troca)..."
-                />
-                <button class="search-btn" onclick="searchBrechos()">🔍 Buscar</button>
-            </div>
-        </div>
-        
-        <div class="map-container">
-            <div id="map"></div>
-        </div>
-        
-        <div class="results-section">
-            <div class="results-header" id="resultsHeader">
-                Digite algo na busca para ver os brechós
-            </div>
-            <div class="cards-container" id="cardsContainer">
-                <div class="no-results" id="noResults">
-                    Use a busca acima para encontrar brechós
-                </div>
+                    id="searchInput"
+                    placeholder="Busque por nome, bairro ou característica (ex: doações, troca)..."
+                >
+                <button class="search-btn" id="searchBtn">🔍 Buscar</button>
             </div>
         </div>
     </div>
+    
+    <div class="container">
+        <div class="map-section">
+            <div id="map"></div>
+        </div>
+        
+        <div id="resultsSection" style="display: none;">
+            <div class="results-header">
+                <div class="results-count" id="resultsCount"></div>
+                <div class="filter-tags" id="filterTags"></div>
+            </div>
+            
+            <div class="cards-grid" id="cardsGrid"></div>
+        </div>
+        
+        <div id="noResults" class="no-results" style="display: none;">
+            <div class="no-results-icon">🔍</div>
+            <h2>Nenhum brechó encontrado</h2>
+            <p>Tente buscar com outros termos</p>
+        </div>
+    </div>
 
-    <!-- Leaflet JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     
     <script>
-        // Base de dados dos brechós
+        // Base de dados de brechós
         const brechosData = [
             {
-                id: 1,
-                nome: "Brechó da Vila",
-                endereco: "Rua João Batista, 456 - Centro, Carapicuíba - SP",
-                bairro: "Centro",
-                latitude: -23.5225,
-                longitude: -46.8356,
-                telefone: "(11) 4164-5678",
-                whatsapp: "5511941645678",
-                site: "https://brechodavila.com.br",
-                horarios: "Seg-Sex: 9h-18h | Sáb: 9h-14h",
-                estrelas: 4.5,
-                avaliacoes: 127,
-                doacoes: "Aceita doações como troca",
-                precoMin: 10,
-                precoMax: 150,
-                tiposPecas: "Usadas e novas",
-                caracteristicas: ["doações", "troca", "roupa feminina", "roupa masculina"]
+                name: "Brechó Estilo & Charme",
+                neighborhood: "Centro",
+                address: "Av. Inocêncio Seráfico, 1250, Carapicuíba",
+                lat: -23.5225,
+                lng: -46.8357,
+                phone: "(11) 4164-2345",
+                whatsapp: "5511941642345",
+                website: "https://exemplo.com/estilocharme",
+                schedule: "Seg-Sex: 9h-18h | Sáb: 9h-14h",
+                rating: 4.5,
+                reviews: 87,
+                acceptsDonations: true,
+                exchangeForDonations: true,
+                priceRange: "R$15 - R$80",
+                hasNewItems: false,
+                tags: ["doações", "troca", "feminino", "masculino"]
             },
             {
-                id: 2,
-                nome: "Recicla Moda",
-                endereco: "Av. Presidente Vargas, 890 - Vila Caldas, Carapicuíba - SP",
-                bairro: "Vila Caldas",
-                latitude: -23.5285,
-                longitude: -46.8425,
-                telefone: "(11) 4163-2345",
-                whatsapp: "5511941632345",
-                site: "https://reciclamoda.com.br",
-                horarios: "Seg-Sáb: 10h-19h",
-                estrelas: 4.8,
-                avaliacoes: 203,
-                doacoes: "Recebe doações sem troca",
-                precoMin: 15,
-                precoMax: 200,
-                tiposPecas: "Usadas e novas",
-                caracteristicas: ["doações", "roupa feminina", "acessórios", "bolsas"]
+                name: "Brechó Renovar",
+                neighborhood: "Vila Dirce",
+                address: "Rua das Flores, 456, Carapicuíba",
+                lat: -23.5190,
+                lng: -46.8420,
+                phone: "(11) 4165-3456",
+                whatsapp: "5511941653456",
+                website: null,
+                schedule: "Ter-Sáb: 10h-19h",
+                rating: 4.8,
+                reviews: 142,
+                acceptsDonations: true,
+                exchangeForDonations: false,
+                priceRange: "R$10 - R$60",
+                hasNewItems: false,
+                tags: ["doações", "infantil", "feminino"]
             },
             {
-                id: 3,
-                nome: "Brechó Solidário Esperança",
-                endereco: "Rua Maria Amélia, 123 - Cohab V, Carapicuíba - SP",
-                bairro: "Cohab V",
-                latitude: -23.5195,
-                longitude: -46.8298,
-                telefone: "(11) 4165-8901",
-                whatsapp: "5511941658901",
-                site: null,
-                horarios: "Ter-Sáb: 8h-17h",
-                estrelas: 4.3,
-                avaliacoes: 89,
-                doacoes: "Aceita doações como troca",
-                precoMin: 5,
-                precoMax: 80,
-                tiposPecas: "Apenas usadas",
-                caracteristicas: ["doações", "troca", "preço baixo", "solidário"]
+                name: "Brechó Treasure",
+                neighborhood: "Osasco",
+                address: "Av. dos Autonomistas, 2300, Osasco",
+                lat: -23.5329,
+                lng: -46.7916,
+                phone: "(11) 3681-4567",
+                whatsapp: "5511936814567",
+                website: "https://exemplo.com/treasure",
+                schedule: "Seg-Sex: 9h-20h | Sáb: 9h-17h | Dom: 10h-15h",
+                rating: 4.7,
+                reviews: 203,
+                acceptsDonations: false,
+                exchangeForDonations: false,
+                priceRange: "R$25 - R$150",
+                hasNewItems: true,
+                tags: ["premium", "feminino", "acessórios"]
             },
             {
-                id: 4,
-                nome: "Chic Brechó",
-                endereco: "Rua das Palmeiras, 234 - Parque Santa Teresa, Carapicuíba - SP",
-                bairro: "Parque Santa Teresa",
-                latitude: -23.5310,
-                longitude: -46.8380,
-                telefone: "(11) 4162-7890",
-                whatsapp: "5511941627890",
-                site: "https://chicbrecho.com.br",
-                horarios: "Seg-Sex: 10h-19h | Sáb: 10h-16h",
-                estrelas: 4.7,
-                avaliacoes: 156,
-                doacoes: "Recebe doações sem troca",
-                precoMin: 20,
-                precoMax: 300,
-                tiposPecas: "Usadas e novas",
-                caracteristicas: ["roupa feminina", "roupas de marca", "acessórios", "sapatos"]
+                name: "Brechó Vintage Point",
+                neighborhood: "Jandira",
+                address: "Rua São Paulo, 789, Jandira",
+                lat: -23.5277,
+                lng: -46.9020,
+                phone: "(11) 4619-5678",
+                whatsapp: "5511946195678",
+                website: "https://exemplo.com/vintagepoint",
+                schedule: "Seg-Sex: 10h-18h | Sáb: 10h-16h",
+                rating: 4.6,
+                reviews: 95,
+                acceptsDonations: true,
+                exchangeForDonations: true,
+                priceRange: "R$20 - R$120",
+                hasNewItems: false,
+                tags: ["troca", "vintage", "retro", "feminino"]
             },
             {
-                id: 5,
-                nome: "Brechó da Tia Lu",
-                endereco: "Rua São José, 567 - Vila Dirce, Carapicuíba - SP",
-                bairro: "Vila Dirce",
-                latitude: -23.5265,
-                longitude: -46.8335,
-                telefone: "(11) 4164-3456",
-                whatsapp: "5511941643456",
-                site: null,
-                horarios: "Seg-Sáb: 9h-18h",
-                estrelas: 4.6,
-                avaliacoes: 134,
-                doacoes: "Aceita doações como troca",
-                precoMin: 10,
-                precoMax: 120,
-                tiposPecas: "Usadas e novas",
-                caracteristicas: ["doações", "troca", "roupa infantil", "roupa feminina"]
+                name: "Brechó Solidário Amor & Vida",
+                neighborhood: "Barueri",
+                address: "Rua da Paz, 321, Barueri",
+                lat: -23.5106,
+                lng: -46.8761,
+                phone: "(11) 4199-6789",
+                whatsapp: "5511941996789",
+                website: null,
+                schedule: "Seg-Sex: 8h-17h",
+                rating: 4.9,
+                reviews: 178,
+                acceptsDonations: true,
+                exchangeForDonations: false,
+                priceRange: "R$5 - R$40",
+                hasNewItems: false,
+                tags: ["doações", "solidário", "todos os tipos"]
             },
             {
-                id: 6,
-                nome: "Sustenta Fashion",
-                endereco: "Av. Inocêncio Seráfico, 789 - Centro, Carapicuíba - SP",
-                bairro: "Centro",
-                latitude: -23.5240,
-                longitude: -46.8365,
-                telefone: "(11) 4163-4567",
-                whatsapp: "5511941634567",
-                site: "https://sustentafashion.com.br",
-                horarios: "Ter-Sex: 10h-18h | Sáb: 9h-15h",
-                estrelas: 4.4,
-                avaliacoes: 98,
-                doacoes: "Recebe doações sem troca",
-                precoMin: 15,
-                precoMax: 180,
-                tiposPecas: "Usadas e novas",
-                caracteristicas: ["sustentável", "roupa feminina", "roupa masculina", "acessórios"]
+                name: "Brechó Moda Consciente",
+                neighborhood: "Centro",
+                address: "Rua Pedro Alves, 890, Carapicuíba",
+                lat: -23.5241,
+                lng: -46.8385,
+                phone: "(11) 4164-7890",
+                whatsapp: "5511941647890",
+                website: "https://exemplo.com/modaconsciente",
+                schedule: "Ter-Sex: 9h-18h | Sáb: 9h-13h",
+                rating: 4.4,
+                reviews: 64,
+                acceptsDonations: true,
+                exchangeForDonations: true,
+                priceRange: "R$12 - R$70",
+                hasNewItems: true,
+                tags: ["troca", "sustentável", "feminino", "masculino", "infantil"]
             }
         ];
 
-        // Inicializar o mapa
-        const map = L.map('map').setView([-23.5225, -46.8356], 13);
-
+        // Inicializar mapa
+        const map = L.map('map').setView([-23.5225, -46.8357], 13);
+        
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors',
             maxZoom: 19
         }).addTo(map);
 
-        let markers = {};
-
-        // Função para criar ícone personalizado
-        function createCustomIcon() {
-            return L.divIcon({
-                className: 'custom-marker',
-                html: '<div style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); width: 30px; height: 30px; border-radius: 50% 50% 50% 0; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.3); transform: rotate(-45deg);"><div style="transform: rotate(45deg); color: white; font-size: 18px; text-align: center; line-height: 24px;">🛍️</div></div>',
-                iconSize: [36, 36],
-                iconAnchor: [18, 36],
-                popupAnchor: [0, -36]
-            });
-        }
+        let markers = [];
 
         // Função para criar conteúdo do popup
         function createPopupContent(brecho) {
-            const stars = '⭐'.repeat(Math.floor(brecho.estrelas));
+            const stars = '⭐'.repeat(Math.floor(brecho.rating));
             return `
                 <div class="popup-content">
-                    <div class="popup-title">${brecho.nome}</div>
-                    <div style="color: #f39c12; margin-bottom: 10px;">${stars} ${brecho.estrelas} (${brecho.avaliacoes} avaliações)</div>
-                    <div style="margin: 5px 0;"><strong>📍</strong> ${brecho.endereco}</div>
-                    <div style="margin: 5px 0;"><strong>📞</strong> ${brecho.telefone}</div>
-                    <div style="margin: 5px 0;"><strong>🕐</strong> ${brecho.horarios}</div>
-                    <div style="margin: 5px 0;"><strong>💰</strong> R$${brecho.precoMin} - R$${brecho.precoMax}</div>
-                    <div style="margin: 5px 0;"><strong>👕</strong> ${brecho.tiposPecas}</div>
-                    <div style="margin: 5px 0;"><strong>🎁</strong> ${brecho.doacoes}</div>
+                    <div class="popup-title">${brecho.name}</div>
+                    <div style="color: #f39c12; margin-bottom: 8px;">${stars} ${brecho.rating} (${brecho.reviews})</div>
+                    <div style="margin: 5px 0;"><strong>📍</strong> ${brecho.address}</div>
+                    <div style="margin: 5px 0;"><strong>🕒</strong> ${brecho.schedule}</div>
+                    <div style="margin: 5px 0;"><strong>💰</strong> ${brecho.priceRange}</div>
+                </div>
+            `;
+        }
+
+        // Função para criar card
+        function createCard(brecho) {
+            const stars = '⭐'.repeat(Math.floor(brecho.rating));
+            const halfStar = brecho.rating % 1 >= 0.5 ? '✨' : '';
+            
+            let badges = '';
+            if (brecho.acceptsDonations) {
+                badges += `<span class="badge badge-donation">✓ Aceita Doações</span>`;
+            }
+            if (brecho.exchangeForDonations) {
+                badges += `<span class="badge badge-exchange">🔄 Troca por Doação</span>`;
+            }
+            if (brecho.hasNewItems) {
+                badges += `<span class="badge badge-new">✨ Peças Novas</span>`;
+            }
+            
+            let contacts = '';
+            if (brecho.whatsapp) {
+                contacts += `<a href="https://wa.me/${brecho.whatsapp}" target="_blank" class="contact-btn btn-whatsapp">💬 WhatsApp</a>`;
+            }
+            if (brecho.phone) {
+                contacts += `<a href="tel:${brecho.phone}" class="contact-btn btn-phone">📞 Ligar</a>`;
+            }
+            if (brecho.website) {
+                contacts += `<a href="${brecho.website}" target="_blank" class="contact-btn btn-website">🌐 Site</a>`;
+            }
+            
+            const itemsType = brecho.hasNewItems ? "Peças usadas e novas" : "Apenas peças usadas";
+            
+            return `
+                <div class="brecho-card" onclick="focusOnMarker(${brecho.lat}, ${brecho.lng})">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">${brecho.name}</div>
+                            <div style="color: var(--text-light); font-size: 0.9rem;">${brecho.neighborhood}</div>
+                        </div>
+                        <div class="rating">${stars}${halfStar} ${brecho.rating}</div>
+                    </div>
+                    
+                    <div>${badges}</div>
+                    
+                    <div class="card-info">
+                        <div class="info-item">
+                            <span class="info-icon">📍</span>
+                            <span>${brecho.address}</span>
+                        </div>
+                        
+                        <div class="schedule">
+                            <strong>🕒 Horário:</strong> ${brecho.schedule}
+                        </div>
+                        
+                        <div class="info-item">
+                            <span class="info-icon">💰</span>
+                            <span class="price-range">${brecho.priceRange}</span>
+                        </div>
+                        
+                        <div class="info-item">
+                            <span class="info-icon">👕</span>
+                            <span>${itemsType}</span>
+                        </div>
+                        
+                        <div class="info-item">
+                            <span class="info-icon">💬</span>
+                            <span>${brecho.reviews} avaliações</span>
+                        </div>
+                        
+                        ${brecho.acceptsDonations && !brecho.exchangeForDonations ? 
+                            '<div class="info-item"><span class="info-icon">❤️</span><span>Recebe doações sem necessidade de troca</span></div>' : ''}
+                    </div>
+                    
+                    <div class="contact-buttons">
+                        ${contacts}
+                    </div>
                 </div>
             `;
         }
@@ -493,120 +616,127 @@
         // Função para adicionar marcadores
         function addMarkers(brechos) {
             // Limpar marcadores anteriores
-            Object.values(markers).forEach(marker => map.removeLayer(marker));
-            markers = {};
-
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+            
             brechos.forEach(brecho => {
-                const marker = L.marker([brecho.latitude, brecho.longitude], {
-                    icon: createCustomIcon()
+                const marker = L.marker([brecho.lat, brecho.lng], {
+                    icon: L.divIcon({
+                        className: 'custom-marker',
+                        html: '<div style="background: linear-gradient(135deg, #9b59b6 0%, #7d3c98 100%); width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 3px 10px rgba(155,89,182,0.4);"></div>',
+                        iconSize: [30, 30],
+                        iconAnchor: [15, 15]
+                    })
                 }).addTo(map);
                 
                 marker.bindPopup(createPopupContent(brecho));
-                markers[brecho.id] = marker;
+                markers.push(marker);
             });
+        }
 
+        // Função para focar em um marcador
+        function focusOnMarker(lat, lng) {
+            map.setView([lat, lng], 16);
+            markers.forEach(marker => {
+                if (marker.getLatLng().lat === lat && marker.getLatLng().lng === lng) {
+                    marker.openPopup();
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Função para exibir resultados
+        function displayResults(brechos, searchTerm = '') {
+            const resultsSection = document.getElementById('resultsSection');
+            const noResults = document.getElementById('noResults');
+            const cardsGrid = document.getElementById('cardsGrid');
+            const resultsCount = document.getElementById('resultsCount');
+            const filterTags = document.getElementById('filterTags');
+            
+            if (brechos.length === 0) {
+                resultsSection.style.display = 'none';
+                noResults.style.display = 'block';
+                addMarkers([]);
+                return;
+            }
+            
+            resultsSection.style.display = 'block';
+            noResults.style.display = 'none';
+            
+            resultsCount.textContent = `${brechos.length} brechó${brechos.length > 1 ? 's' : ''} encontrado${brechos.length > 1 ? 's' : ''}`;
+            
+            if (searchTerm) {
+                filterTags.innerHTML = `<span class="filter-tag">🔍 "${searchTerm}"</span>`;
+            } else {
+                filterTags.innerHTML = '';
+            }
+            
+            cardsGrid.innerHTML = brechos.map(brecho => createCard(brecho)).join('');
+            addMarkers(brechos);
+            
+            // Ajustar zoom do mapa para mostrar todos os marcadores
             if (brechos.length > 0) {
-                const bounds = L.latLngBounds(brechos.map(b => [b.latitude, b.longitude]));
+                const bounds = L.latLngBounds(brechos.map(b => [b.lat, b.lng]));
                 map.fitBounds(bounds, { padding: [50, 50] });
             }
         }
 
-        // Função para criar card
-        function createCard(brecho) {
-            const stars = '⭐'.repeat(Math.floor(brecho.estrelas));
-            const whatsappLink = `https://wa.me/${brecho.whatsapp}`;
-            const websiteBtn = brecho.site ? 
-                `<a href="${brecho.site}" target="_blank" class="contact-btn website-btn">🌐 Site</a>` : '';
-            
-            return `
-                <div class="brecho-card visible" data-id="${brecho.id}">
-                    <div class="card-header">
-                        <div class="card-title">${brecho.nome}</div>
-                        <div class="rating">${stars} ${brecho.estrelas}</div>
-                    </div>
-                    
-                    <div class="card-info">
-                        <div class="card-info-item">
-                            <span class="icon">📍</span>
-                            <span>${brecho.endereco}</span>
-                        </div>
-                        <div class="card-info-item">
-                            <span class="icon">📞</span>
-                            <span>${brecho.telefone}</span>
-                        </div>
-                        <div class="card-info-item">
-                            <span class="icon">🕐</span>
-                            <span>${brecho.horarios}</span>
-                        </div>
-                        <div class="card-info-item">
-                            <span class="icon">💬</span>
-                            <span>${brecho.avaliacoes} avaliações</span>
-                        </div>
-                    </div>
-                    
-                    <div class="price-range">
-                        💰 Faixa de preço: R$${brecho.precoMin} - R$${brecho.precoMax}
-                    </div>
-                    
-                    <div>
-                        <span class="badge">👕 ${brecho.tiposPecas}</span>
-                        <span class="badge">🎁 ${brecho.doacoes}</span>
-                    </div>
-                    
-                    <div class="contact-btns">
-                        <a href="${whatsappLink}" target="_blank" class="contact-btn whatsapp-btn">💬 WhatsApp</a>
-                        ${websiteBtn}
-                    </div>
-                </div>
-            `;
-        }
-
         // Função de busca
-        function searchBrechos() {
+        function performSearch() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             
             if (!searchTerm) {
-                document.getElementById('resultsHeader').textContent = 'Digite algo na busca para ver os brechós';
-                document.getElementById('cardsContainer').innerHTML = '<div class="no-results">Use a busca acima para encontrar brechós</div>';
-                Object.values(markers).forEach(marker => map.removeLayer(marker));
+                displayResults([]);
                 return;
             }
             
             const results = brechosData.filter(brecho => {
-                return brecho.nome.toLowerCase().includes(searchTerm) ||
-                       brecho.bairro.toLowerCase().includes(searchTerm) ||
-                       brecho.endereco.toLowerCase().includes(searchTerm) ||
-                       brecho.caracteristicas.some(c => c.toLowerCase().includes(searchTerm)) ||
-                       brecho.doacoes.toLowerCase().includes(searchTerm);
+                return brecho.name.toLowerCase().includes(searchTerm) ||
+                       brecho.neighborhood.toLowerCase().includes(searchTerm) ||
+                       brecho.address.toLowerCase().includes(searchTerm) ||
+                       brecho.tags.some(tag => tag.includes(searchTerm)) ||
+                       (searchTerm.includes('doação') && brecho.acceptsDonations) ||
+                       (searchTerm.includes('troca') && brecho.exchangeForDonations) ||
+                       (searchTerm.includes('novo') && brecho.hasNewItems);
             });
             
-            if (results.length === 0) {
-                document.getElementById('resultsHeader').textContent = 'Nenhum brechó encontrado';
-                document.getElementById('cardsContainer').innerHTML = '<div class="no-results">Não encontramos brechós com esse critério. Tente buscar por: nome, bairro, "doações" ou "troca"</div>';
-                Object.values(markers).forEach(marker => map.removeLayer(marker));
-                return;
-            }
-            
-            document.getElementById('resultsHeader').textContent = `${results.length} brechó(s) encontrado(s)`;
-            
-            const cardsHTML = results.map(brecho => createCard(brecho)).join('');
-            document.getElementById('cardsContainer').innerHTML = cardsHTML;
-            
-            addMarkers(results);
+            displayResults(results, searchTerm);
         }
 
-        // Busca ao pressionar Enter
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchBrechos();
-            }
+        // Event listeners
+        document.getElementById('searchBtn').addEventListener('click', performSearch);
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') performSearch();
         });
 
-        // Adicionar todos os marcadores inicialmente (ocultos)
-        // Os cards só aparecem após busca
-        console.log('Mapa carregado! Use a busca para encontrar brechós.');
+        // Inicialização
+        addMarkers(brechosData);
+        
+        // Tentar obter localização do usuário
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    map.setView([userLat, userLng], 13);
+                },
+                () => {
+                    console.log('Localização não disponível, usando centro de Carapicuíba');
+                }
+            );
+        }
+
+        // PWA: Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZXZlbnQgPT4geyBjb25zb2xlLmxvZygnU1cgaW5zdGFsYWRvJyk7IH0pOw==')
+                    .then(reg => console.log('Service Worker registrado'))
+                    .catch(err => console.log('Erro no Service Worker:', err));
+            });
+        }
     </script>
 </body>
 </html>
+
 
 
