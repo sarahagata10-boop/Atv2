@@ -336,7 +336,7 @@
     <script>
         // Base de dados dos brechós
         const brechosData = [
-            {
+           {
             id: 1,
             nome: "Brechó da Vila",
             endereco: "Rua João Batista, 456 - Centro, Carapicuíba - SP",
@@ -490,171 +490,164 @@
         },
     ];
 
-    // Inicializar o mapa
-    const map = L.map('map').setView([-23.5225, -46.8356], 13);
+        // Inicializar o mapa
+        const map = L.map('map').setView([-23.5225, -46.8356], 13);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 19
-    }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
 
-    let markers = {};
+        let markers = {};
 
-    // Função para criar ícone personalizado
-    function createCustomIcon() {
-        return L.divIcon({
-            className: 'custom-marker',
-            html: '<div style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); width: 30px; height: 30px; border-radius: 50% 50% 50% 0; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.3); transform: rotate(-45deg);"><div style="transform: rotate(45deg); color: white; font-size: 18px; text-align: center; line-height: 24px;">🛍️</div></div>',
-            iconSize: [36, 36],
-            iconAnchor: [18, 36],
-            popupAnchor: [0, -36]
-        });
-    }
+        // Função para criar ícone personalizado
+        function createCustomIcon() {
+            return L.divIcon({
+                className: 'custom-marker',
+                html: '<div style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); width: 30px; height: 30px; border-radius: 50% 50% 50% 0; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.3); transform: rotate(-45deg);"><div style="transform: rotate(45deg); color: white; font-size: 18px; text-align: center; line-height: 24px;">🛍️</div></div>',
+                iconSize: [36, 36],
+                iconAnchor: [18, 36],
+                popupAnchor: [0, -36]
+            });
+        }
 
-    // Função para criar conteúdo do popup
-    function createPopupContent(brecho) {
-        // CORRIGIDO: Acessando 'horarios', 'precoMin', 'precoMax', e 'doacoes' de forma consistente
-        const stars = '⭐'.repeat(Math.floor(brecho.estrelas));
-        return `
-            <div class="popup-content">
-                <div class="popup-title">${brecho.nome}</div>
-                <div style="color: #f39c12; margin-bottom: 10px;">${stars} ${brecho.estrelas} (${brecho.avaliacoes} avaliações)</div>
-                <div style="margin: 5px 0;"><strong>📍</strong> ${brecho.endereco}</div>
-                <div style="margin: 5px 0;"><strong>📞</strong> ${brecho.telefone}</div>
-                <div style="margin: 5px 0;"><strong>🕐</strong> ${brecho.horarios}</div>
-                <div style="margin: 5px 0;"><strong>💰</strong> R$${brecho.precoMin} - R$${brecho.precoMax}</div>
-                <div style="margin: 5px 0;"><strong>👕</strong> ${brecho.tiposPecas}</div>
-                <div style="margin: 5px 0;"><strong>🎁</strong> ${brecho.doacoes}</div>
-            </div>
-        `;
-    }
+        // Função para criar conteúdo do popup
+        function createPopupContent(brecho) {
+            const stars = '⭐'.repeat(Math.floor(brecho.estrelas));
+            return `
+                <div class="popup-content">
+                    <div class="popup-title">${brecho.nome}</div>
+                    <div style="color: #f39c12; margin-bottom: 10px;">${stars} ${brecho.estrelas} (${brecho.avaliacoes} avaliações)</div>
+                    <div style="margin: 5px 0;"><strong>📍</strong> ${brecho.endereco}</div>
+                    <div style="margin: 5px 0;"><strong>📞</strong> ${brecho.telefone}</div>
+                    <div style="margin: 5px 0;"><strong>🕐</strong> ${brecho.horarios}</div>
+                    <div style="margin: 5px 0;"><strong>💰</strong> R$${brecho.precoMin} - R$${brecho.precoMax}</div>
+                    <div style="margin: 5px 0;"><strong>👕</strong> ${brecho.tiposPecas}</div>
+                    <div style="margin: 5px 0;"><strong>🎁</strong> ${brecho.doacoes}</div>
+                </div>
+            `;
+        }
 
-    // Função para adicionar marcadores
-    function addMarkers(brechos) {
-        // Limpar marcadores anteriores
-        Object.values(markers).forEach(marker => map.removeLayer(marker));
-        markers = {};
+        // Função para adicionar marcadores
+        function addMarkers(brechos) {
+            // Limpar marcadores anteriores
+            Object.values(markers).forEach(marker => map.removeLayer(marker));
+            markers = {};
 
-        brechos.forEach(brecho => {
-            const marker = L.marker([brecho.latitude, brecho.longitude], {
-                icon: createCustomIcon()
-            }).addTo(map);
-            
-            marker.bindPopup(createPopupContent(brecho));
-            markers[brecho.id] = marker;
-        });
+            brechos.forEach(brecho => {
+                const marker = L.marker([brecho.latitude, brecho.longitude], {
+                    icon: createCustomIcon()
+                }).addTo(map);
+                
+                marker.bindPopup(createPopupContent(brecho));
+                markers[brecho.id] = marker;
+            });
 
-        if (brechos.length > 0) {
-            // Ajustar o mapa para mostrar todos os resultados
-            const bounds = L.latLngBounds(brechos.map(b => [b.latitude, b.longitude]));
-            map.fitBounds(bounds, { padding: [50, 50] });
-        } else {
-             // Se não houver resultados, recentraliza em Carapicuíba
-             map.setView([-23.5225, -46.8356], 13);
-        }
-    }
+            if (brechos.length > 0) {
+                const bounds = L.latLngBounds(brechos.map(b => [b.latitude, b.longitude]));
+                map.fitBounds(bounds, { padding: [50, 50] });
+            }
+        }
 
-    // Função para criar card
-    function createCard(brecho) {
-        // CORRIGIDO: Acessando 'horarios', 'precoMin', 'precoMax', e 'doacoes' de forma consistente
-        const stars = '⭐'.repeat(Math.floor(brecho.estrelas));
-        const whatsappLink = `https://wa.me/${brecho.whatsapp}`;
-        const websiteBtn = brecho.site ? 
-            `<a href="${brecho.site}" target="_blank" class="contact-btn website-btn">🌐 Site</a>` : '';
-        
-        return `
-            <div class="brecho-card visible" data-id="${brecho.id}">
-                <div class="card-header">
-                    <div class="card-title">${brecho.nome}</div>
-                    <div class="rating">${stars} ${brecho.estrelas}</div>
-                </div>
-                
-                <div class="card-info">
-                    <div class="card-info-item">
-                        <span class="icon">📍</span>
-                        <span>${brecho.endereco}</span>
-                    </div>
-                    <div class="card-info-item">
-                        <span class="icon">📞</span>
-                        <span>${brecho.telefone}</span>
-                    </div>
-                    <div class="card-info-item">
-                        <span class="icon">🕐</span>
-                        <span>${brecho.horarios}</span>
-                    </div>
-                    <div class="card-info-item">
-                        <span class="icon">💬</span>
-                        <span>${brecho.avaliacoes} avaliações</span>
-                    </div>
-                </div>
-                
-                <div class="price-range">
-                    💰 Faixa de preço: R$${brecho.precoMin} - R$${brecho.precoMax}
-                </div>
-                
-                <div>
-                    <span class="badge">👕 ${brecho.tiposPecas}</span>
-                    <span class="badge">🎁 ${brecho.doacoes}</span>
-                </div>
-                
-                <div class="contact-btns">
-                    <a href="${whatsappLink}" target="_blank" class="contact-btn whatsapp-btn">💬 WhatsApp</a>
-                    ${websiteBtn}
-                </div>
-            </div>
-        `;
-    }
+        // Função para criar card
+        function createCard(brecho) {
+            const stars = '⭐'.repeat(Math.floor(brecho.estrelas));
+            const whatsappLink = `https://wa.me/${brecho.whatsapp}`;
+            const websiteBtn = brecho.site ? 
+                `<a href="${brecho.site}" target="_blank" class="contact-btn website-btn">🌐 Site</a>` : '';
+            
+            return `
+                <div class="brecho-card visible" data-id="${brecho.id}">
+                    <div class="card-header">
+                        <div class="card-title">${brecho.nome}</div>
+                        <div class="rating">${stars} ${brecho.estrelas}</div>
+                    </div>
+                    
+                    <div class="card-info">
+                        <div class="card-info-item">
+                            <span class="icon">📍</span>
+                            <span>${brecho.endereco}</span>
+                        </div>
+                        <div class="card-info-item">
+                            <span class="icon">📞</span>
+                            <span>${brecho.telefone}</span>
+                        </div>
+                        <div class="card-info-item">
+                            <span class="icon">🕐</span>
+                            <span>${brecho.horarios}</span>
+                        </div>
+                        <div class="card-info-item">
+                            <span class="icon">💬</span>
+                            <span>${brecho.avaliacoes} avaliações</span>
+                        </div>
+                    </div>
+                    
+                    <div class="price-range">
+                        💰 Faixa de preço: R$${brecho.precoMin} - R$${brecho.precoMax}
+                    </div>
+                    
+                    <div>
+                        <span class="badge">👕 ${brecho.tiposPecas}</span>
+                        <span class="badge">🎁 ${brecho.doacoes}</span>
+                    </div>
+                    
+                    <div class="contact-btns">
+                        <a href="${whatsappLink}" target="_blank" class="contact-btn whatsapp-btn">💬 WhatsApp</a>
+                        ${websiteBtn}
+                    </div>
+                </div>
+            `;
+        }
 
-    // Função de busca
-    function searchBrechos() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-        
-        if (!searchTerm) {
-            document.getElementById('resultsHeader').textContent = 'Digite algo na busca para ver os brechós';
-            document.getElementById('cardsContainer').innerHTML = '<div class="no-results">Use a busca acima para encontrar brechós</div>';
-            Object.values(markers).forEach(marker => map.removeLayer(marker));
-            // Adicionado setView para centralizar o mapa sem marcadores
-            map.setView([-23.5225, -46.8356], 13); 
-            return;
-        }
-        
-        const results = brechosData.filter(brecho => {
-            // CORRIGIDO: Usando a chave 'doacoes' de forma consistente para a busca.
-            return brecho.nome.toLowerCase().includes(searchTerm) ||
-                    brecho.bairro.toLowerCase().includes(searchTerm) ||
-                    brecho.endereco.toLowerCase().includes(searchTerm) ||
-                    (brecho.caracteristicas && brecho.caracteristicas.some(c => c.toLowerCase().includes(searchTerm))) || // Adicionado verificação para 'caracteristicas'
-                    (brecho.doacoes && brecho.doacoes.toLowerCase().includes(searchTerm));
-        });
-        
-        if (results.length === 0) {
-            document.getElementById('resultsHeader').textContent = 'Nenhum brechó encontrado';
-            document.getElementById('cardsContainer').innerHTML = '<div class="no-results">Não encontramos brechós com esse critério. Tente buscar por: nome, bairro, "doações" ou "troca"</div>';
-            Object.values(markers).forEach(marker => map.removeLayer(marker));
-            map.setView([-23.5225, -46.8356], 13);
-            return;
-        }
-        
-        document.getElementById('resultsHeader').textContent = `${results.length} brechó(s) encontrado(s)`;
-        
-        const cardsHTML = results.map(brecho => createCard(brecho)).join('');
-        document.getElementById('cardsContainer').innerHTML = cardsHTML;
-        
-        addMarkers(results);
-    }
+        // Função de busca
+        function searchBrechos() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                document.getElementById('resultsHeader').textContent = 'Digite algo na busca para ver os brechós';
+                document.getElementById('cardsContainer').innerHTML = '<div class="no-results">Use a busca acima para encontrar brechós</div>';
+                Object.values(markers).forEach(marker => map.removeLayer(marker));
+                return;
+            }
+            
+            const results = brechosData.filter(brecho => {
+                return brecho.nome.toLowerCase().includes(searchTerm) ||
+                       brecho.bairro.toLowerCase().includes(searchTerm) ||
+                       brecho.endereco.toLowerCase().includes(searchTerm) ||
+                       brecho.caracteristicas.some(c => c.toLowerCase().includes(searchTerm)) ||
+                       brecho.doacoes.toLowerCase().includes(searchTerm);
+            });
+            
+            if (results.length === 0) {
+                document.getElementById('resultsHeader').textContent = 'Nenhum brechó encontrado';
+                document.getElementById('cardsContainer').innerHTML = '<div class="no-results">Não encontramos brechós com esse critério. Tente buscar por: nome, bairro, "doações" ou "troca"</div>';
+                Object.values(markers).forEach(marker => map.removeLayer(marker));
+                return;
+            }
+            
+            document.getElementById('resultsHeader').textContent = `${results.length} brechó(s) encontrado(s)`;
+            
+            const cardsHTML = results.map(brecho => createCard(brecho)).join('');
+            document.getElementById('cardsContainer').innerHTML = cardsHTML;
+            
+            addMarkers(results);
+        }
 
-    // Busca ao pressionar Enter
-    document.getElementById('searchInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            searchBrechos();
-        }
-    });
+        // Busca ao pressionar Enter
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchBrechos();
+            }
+        });
 
-    // Adicionar todos os marcadores inicialmente (opcional, mas mantém a função mais robusta)
-    // Para iniciar mostrando algo, você pode chamar:
-    // searchBrechos(); 
-    // Ou para apenas carregar o mapa centralizado sem resultados:
-    console.log('Mapa carregado! Use a busca para encontrar brechós.');
-</script>
+        // Adicionar todos os marcadores inicialmente (ocultos)
+        // Os cards só aparecem após busca
+        console.log('Mapa carregado! Use a busca para encontrar brechós.');
+    </script>
+</body>
+</html>
+ 
+
+
 
 
