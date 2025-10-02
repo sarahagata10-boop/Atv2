@@ -1,17 +1,15 @@
-print('teste')
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulário com Mapa</title>
+    <meta name="theme-color" content="#9b59b6">
+    <meta name="description" content="Encontre os melhores brechós em Carapicuíba e região">
+    <link rel="manifest" href="manifest.json">
+    <title>Brechós Carapicuíba</title>
     
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
-    
-    <!-- Firebase -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"></script>
     
     <style>
         * {
@@ -22,26 +20,21 @@ print('teste')
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #b19cd9 0%, #9b59b6 100%);
             min-height: 100vh;
-            padding: 20px;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            backdrop-filter: blur(10px);
         }
         
         .header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
             color: white;
-            padding: 30px;
+            padding: 30px 20px;
             text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
         
         .header h1 {
@@ -52,175 +45,252 @@ print('teste')
         
         .header p {
             font-size: 1.1rem;
-            opacity: 0.9;
+            opacity: 0.95;
         }
         
-        .content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0;
-            min-height: 600px;
+        .search-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            margin: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
         
-        .form-section {
-            padding: 40px;
+        .search-box {
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
         }
         
-        .form-group {
-            margin-bottom: 25px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 1rem;
-        }
-        
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 15px;
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 15px 20px;
             border: 2px solid #e1e5e9;
             border-radius: 12px;
             font-size: 1rem;
             transition: all 0.3s ease;
-            background: #fafbfc;
         }
         
-        .form-group input:focus,
-        .form-group textarea:focus {
+        .search-input:focus {
             outline: none;
-            border-color: #4facfe;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
-            transform: translateY(-1px);
+            border-color: #9b59b6;
+            box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.1);
         }
         
-        .form-group textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-        
-        .coordinates {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        
-        .submit-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .search-btn {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
             color: white;
             border: none;
-            padding: 15px 40px;
+            padding: 15px 35px;
             border-radius: 12px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
         
-        .submit-btn:hover {
+        .search-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 8px 20px rgba(155, 89, 182, 0.4);
         }
         
-        .submit-btn:active {
-            transform: translateY(0);
-        }
-        
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .map-section {
-            position: relative;
-            background: #f8f9fa;
+        .map-container {
+            margin: 20px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
         
         #map {
-            height: 100%;
-            min-height: 600px;
+            height: 500px;
+            width: 100%;
         }
         
-        .map-info {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        .results-section {
+            margin: 20px;
+        }
+        
+        .results-header {
             background: rgba(255, 255, 255, 0.95);
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-        }
-        
-        .map-info h3 {
-            margin-bottom: 10px;
-            color: #333;
-            font-size: 1rem;
-        }
-        
-        .map-info p {
-            margin: 5px 0;
-            color: #666;
-            font-size: 0.9rem;
-        }
-        
-        .status-message {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 12px;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+            color: #8e44ad;
+            font-size: 1.3rem;
             font-weight: 600;
+        }
+        
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .brecho-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 5px solid #9b59b6;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            display: none;
+        }
+        
+        .brecho-card.visible {
+            display: block;
+        }
+        
+        .brecho-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(155, 89, 182, 0.2);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            color: #8e44ad;
+            font-weight: 700;
+            flex: 1;
+        }
+        
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.95rem;
+            color: #f39c12;
+            font-weight: 600;
+        }
+        
+        .card-info {
+            margin: 10px 0;
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .card-info-item {
+            display: flex;
+            align-items: start;
+            margin: 8px 0;
+            gap: 10px;
+        }
+        
+        .icon {
+            color: #9b59b6;
+            font-weight: bold;
+            min-width: 20px;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #b19cd9 0%, #9b59b6 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin: 5px 5px 5px 0;
+            font-weight: 600;
+        }
+        
+        .price-range {
+            background: #f8f4fc;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            color: #8e44ad;
+            font-weight: 600;
+        }
+        
+        .contact-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .contact-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px;
+            border-radius: 8px;
             text-align: center;
-            opacity: 0;
+            text-decoration: none;
+            font-weight: 600;
             transition: all 0.3s ease;
         }
         
-        .status-message.show {
-            opacity: 1;
-            transform: translateY(-5px);
-        }
-        
-        .status-message.success {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        .whatsapp-btn {
+            background: #25D366;
             color: white;
         }
         
-        .status-message.error {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        .whatsapp-btn:hover {
+            background: #1fb855;
+            transform: translateY(-2px);
+        }
+        
+        .website-btn {
+            background: #9b59b6;
             color: white;
+        }
+        
+        .website-btn:hover {
+            background: #8e44ad;
+            transform: translateY(-2px);
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .leaflet-popup-content-wrapper {
+            border-radius: 12px;
+            padding: 5px;
+        }
+        
+        .popup-content {
+            max-width: 300px;
+        }
+        
+        .popup-title {
+            font-size: 1.2rem;
+            color: #8e44ad;
+            font-weight: 700;
+            margin-bottom: 10px;
         }
         
         @media (max-width: 768px) {
-            .content {
-                grid-template-columns: 1fr;
-            }
-            
-            .form-section {
-                padding: 30px 20px;
-            }
-            
             .header h1 {
                 font-size: 2rem;
             }
             
-            .coordinates {
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .search-input {
+                min-width: 100%;
+            }
+            
+            .cards-container {
                 grid-template-columns: 1fr;
             }
             
-            .map-info {
-                position: relative;
-                top: auto;
-                right: auto;
-                margin: 20px;
+            #map {
+                height: 400px;
             }
         }
     </style>
@@ -228,67 +298,34 @@ print('teste')
 <body>
     <div class="container">
         <div class="header">
-            <h1>📍 Formulário Geolocalizado</h1>
-            <p>Clique no mapa para selecionar uma localização e envie seu comentário</p>
+            <h1>🛍️ Brechós em Carapicuíba</h1>
+            <p>Encontre os melhores brechós da região com moda sustentável</p>
         </div>
         
-        <div class="content">
-            <div class="form-section">
-                <form id="commentForm">
-                    <div class="form-group">
-                        <label for="comment">💬 Seu Comentário:</label>
-                        <textarea 
-                            id="comment" 
-                            name="comment" 
-                            placeholder="Escreva seu comentário aqui..."
-                            required
-                        ></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>📍 Coordenadas:</label>
-                        <div class="coordinates">
-                            <div>
-                                <input 
-                                    type="number" 
-                                    id="latitude" 
-                                    name="latitude" 
-                                    placeholder="Latitude" 
-                                    step="any"
-                                    readonly
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <input 
-                                    type="number" 
-                                    id="longitude" 
-                                    name="longitude" 
-                                    placeholder="Longitude" 
-                                    step="any"
-                                    readonly
-                                    required
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="submit-btn" id="submitBtn">
-                        🚀 Enviar Comentário
-                    </button>
-                    
-                    <div id="statusMessage" class="status-message"></div>
-                </form>
+        <div class="search-section">
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="search-input" 
+                    placeholder="Buscar por nome, bairro ou características (ex: doações, troca)..."
+                />
+                <button class="search-btn" onclick="searchBrechos()">🔍 Buscar</button>
             </div>
-            
-            <div class="map-section">
-                <div class="map-info">
-                    <h3>🗺️ Como usar:</h3>
-                    <p>• Clique no mapa para marcar um ponto</p>
-                    <p>• As coordenadas serão preenchidas automaticamente</p>
-                    <p>• Escreva seu comentário e envie</p>
+        </div>
+        
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+        
+        <div class="results-section">
+            <div class="results-header" id="resultsHeader">
+                Digite algo na busca para ver os brechós
+            </div>
+            <div class="cards-container" id="cardsContainer">
+                <div class="no-results" id="noResults">
+                    Use a busca acima para encontrar brechós
                 </div>
-                <div id="map"></div>
             </div>
         </div>
     </div>
@@ -297,185 +334,279 @@ print('teste')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     
     <script>
-        // CONFIGURAÇÃO DO FIREBASE
-        // IMPORTANTE: Substitua pela sua configuração do Firebase
-      // CONFIGURAÇÃO DO FIREBASE
-let db;
-
-async function initializeFirebase() {
-    try {
-        // Requisição para a API que criamos no Vercel
-        const response = await fetch('/api/firebaseConfig');
-        const firebaseConfig = await response.json();
-
-        // Inicializa o Firebase com as credenciais obtidas
-        firebase.initializeApp(firebaseConfig);
-
-        // Atribui a instância do Firestore à variável db
-        db = firebase.firestore();
-
-        console.log('Firebase e Firestore inicializados com sucesso!');
-
-    } catch (error) {
-        console.error('Erro na inicialização do Firebase:', error);
-        showStatus('Erro: Verifique a configuração no Vercel.', 'error');
-    }
-}
-
-// Chama a função de inicialização quando a página carrega
-initializeFirebase();
+        // Base de dados dos brechós
+        const brechosData = [
+            {
+                id: 1,
+                nome: "Brechó da Vila",
+                endereco: "Rua João Batista, 456 - Centro, Carapicuíba - SP",
+                bairro: "Centro",
+                latitude: -23.5225,
+                longitude: -46.8356,
+                telefone: "(11) 4164-5678",
+                whatsapp: "5511941645678",
+                site: "https://brechodavila.com.br",
+                horarios: "Seg-Sex: 9h-18h | Sáb: 9h-14h",
+                estrelas: 4.5,
+                avaliacoes: 127,
+                doacoes: "Aceita doações como troca",
+                precoMin: 10,
+                precoMax: 150,
+                tiposPecas: "Usadas e novas",
+                caracteristicas: ["doações", "troca", "roupa feminina", "roupa masculina"]
+            },
+            {
+                id: 2,
+                nome: "Recicla Moda",
+                endereco: "Av. Presidente Vargas, 890 - Vila Caldas, Carapicuíba - SP",
+                bairro: "Vila Caldas",
+                latitude: -23.5285,
+                longitude: -46.8425,
+                telefone: "(11) 4163-2345",
+                whatsapp: "5511941632345",
+                site: "https://reciclamoda.com.br",
+                horarios: "Seg-Sáb: 10h-19h",
+                estrelas: 4.8,
+                avaliacoes: 203,
+                doacoes: "Recebe doações sem troca",
+                precoMin: 15,
+                precoMax: 200,
+                tiposPecas: "Usadas e novas",
+                caracteristicas: ["doações", "roupa feminina", "acessórios", "bolsas"]
+            },
+            {
+                id: 3,
+                nome: "Brechó Solidário Esperança",
+                endereco: "Rua Maria Amélia, 123 - Cohab V, Carapicuíba - SP",
+                bairro: "Cohab V",
+                latitude: -23.5195,
+                longitude: -46.8298,
+                telefone: "(11) 4165-8901",
+                whatsapp: "5511941658901",
+                site: null,
+                horarios: "Ter-Sáb: 8h-17h",
+                estrelas: 4.3,
+                avaliacoes: 89,
+                doacoes: "Aceita doações como troca",
+                precoMin: 5,
+                precoMax: 80,
+                tiposPecas: "Apenas usadas",
+                caracteristicas: ["doações", "troca", "preço baixo", "solidário"]
+            },
+            {
+                id: 4,
+                nome: "Chic Brechó",
+                endereco: "Rua das Palmeiras, 234 - Parque Santa Teresa, Carapicuíba - SP",
+                bairro: "Parque Santa Teresa",
+                latitude: -23.5310,
+                longitude: -46.8380,
+                telefone: "(11) 4162-7890",
+                whatsapp: "5511941627890",
+                site: "https://chicbrecho.com.br",
+                horarios: "Seg-Sex: 10h-19h | Sáb: 10h-16h",
+                estrelas: 4.7,
+                avaliacoes: 156,
+                doacoes: "Recebe doações sem troca",
+                precoMin: 20,
+                precoMax: 300,
+                tiposPecas: "Usadas e novas",
+                caracteristicas: ["roupa feminina", "roupas de marca", "acessórios", "sapatos"]
+            },
+            {
+                id: 5,
+                nome: "Brechó da Tia Lu",
+                endereco: "Rua São José, 567 - Vila Dirce, Carapicuíba - SP",
+                bairro: "Vila Dirce",
+                latitude: -23.5265,
+                longitude: -46.8335,
+                telefone: "(11) 4164-3456",
+                whatsapp: "5511941643456",
+                site: null,
+                horarios: "Seg-Sáb: 9h-18h",
+                estrelas: 4.6,
+                avaliacoes: 134,
+                doacoes: "Aceita doações como troca",
+                precoMin: 10,
+                precoMax: 120,
+                tiposPecas: "Usadas e novas",
+                caracteristicas: ["doações", "troca", "roupa infantil", "roupa feminina"]
+            },
+            {
+                id: 6,
+                nome: "Sustenta Fashion",
+                endereco: "Av. Inocêncio Seráfico, 789 - Centro, Carapicuíba - SP",
+                bairro: "Centro",
+                latitude: -23.5240,
+                longitude: -46.8365,
+                telefone: "(11) 4163-4567",
+                whatsapp: "5511941634567",
+                site: "https://sustentafashion.com.br",
+                horarios: "Ter-Sex: 10h-18h | Sáb: 9h-15h",
+                estrelas: 4.4,
+                avaliacoes: 98,
+                doacoes: "Recebe doações sem troca",
+                precoMin: 15,
+                precoMax: 180,
+                tiposPecas: "Usadas e novas",
+                caracteristicas: ["sustentável", "roupa feminina", "roupa masculina", "acessórios"]
+            }
+        ];
 
         // Inicializar o mapa
-        const map = L.map('map').setView([-23.5505, -46.6333], 10); // São Paulo como centro inicial
+        const map = L.map('map').setView([-23.5225, -46.8356], 13);
 
-        // Adicionar camada do OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors',
             maxZoom: 19
         }).addTo(map);
 
-        // Variável para armazenar o marcador atual
-        let currentMarker = null;
+        let markers = {};
 
-        // Função para adicionar marcador no mapa
-        function addMarker(lat, lng) {
-            // Remover marcador anterior se existir
-            if (currentMarker) {
-                map.removeLayer(currentMarker);
+        // Função para criar ícone personalizado
+        function createCustomIcon() {
+            return L.divIcon({
+                className: 'custom-marker',
+                html: '<div style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); width: 30px; height: 30px; border-radius: 50% 50% 50% 0; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.3); transform: rotate(-45deg);"><div style="transform: rotate(45deg); color: white; font-size: 18px; text-align: center; line-height: 24px;">🛍️</div></div>',
+                iconSize: [36, 36],
+                iconAnchor: [18, 36],
+                popupAnchor: [0, -36]
+            });
+        }
+
+        // Função para criar conteúdo do popup
+        function createPopupContent(brecho) {
+            const stars = '⭐'.repeat(Math.floor(brecho.estrelas));
+            return `
+                <div class="popup-content">
+                    <div class="popup-title">${brecho.nome}</div>
+                    <div style="color: #f39c12; margin-bottom: 10px;">${stars} ${brecho.estrelas} (${brecho.avaliacoes} avaliações)</div>
+                    <div style="margin: 5px 0;"><strong>📍</strong> ${brecho.endereco}</div>
+                    <div style="margin: 5px 0;"><strong>📞</strong> ${brecho.telefone}</div>
+                    <div style="margin: 5px 0;"><strong>🕐</strong> ${brecho.horarios}</div>
+                    <div style="margin: 5px 0;"><strong>💰</strong> R$${brecho.precoMin} - R$${brecho.precoMax}</div>
+                    <div style="margin: 5px 0;"><strong>👕</strong> ${brecho.tiposPecas}</div>
+                    <div style="margin: 5px 0;"><strong>🎁</strong> ${brecho.doacoes}</div>
+                </div>
+            `;
+        }
+
+        // Função para adicionar marcadores
+        function addMarkers(brechos) {
+            // Limpar marcadores anteriores
+            Object.values(markers).forEach(marker => map.removeLayer(marker));
+            markers = {};
+
+            brechos.forEach(brecho => {
+                const marker = L.marker([brecho.latitude, brecho.longitude], {
+                    icon: createCustomIcon()
+                }).addTo(map);
+                
+                marker.bindPopup(createPopupContent(brecho));
+                markers[brecho.id] = marker;
+            });
+
+            if (brechos.length > 0) {
+                const bounds = L.latLngBounds(brechos.map(b => [b.latitude, b.longitude]));
+                map.fitBounds(bounds, { padding: [50, 50] });
+            }
+        }
+
+        // Função para criar card
+        function createCard(brecho) {
+            const stars = '⭐'.repeat(Math.floor(brecho.estrelas));
+            const whatsappLink = `https://wa.me/${brecho.whatsapp}`;
+            const websiteBtn = brecho.site ? 
+                `<a href="${brecho.site}" target="_blank" class="contact-btn website-btn">🌐 Site</a>` : '';
+            
+            return `
+                <div class="brecho-card visible" data-id="${brecho.id}">
+                    <div class="card-header">
+                        <div class="card-title">${brecho.nome}</div>
+                        <div class="rating">${stars} ${brecho.estrelas}</div>
+                    </div>
+                    
+                    <div class="card-info">
+                        <div class="card-info-item">
+                            <span class="icon">📍</span>
+                            <span>${brecho.endereco}</span>
+                        </div>
+                        <div class="card-info-item">
+                            <span class="icon">📞</span>
+                            <span>${brecho.telefone}</span>
+                        </div>
+                        <div class="card-info-item">
+                            <span class="icon">🕐</span>
+                            <span>${brecho.horarios}</span>
+                        </div>
+                        <div class="card-info-item">
+                            <span class="icon">💬</span>
+                            <span>${brecho.avaliacoes} avaliações</span>
+                        </div>
+                    </div>
+                    
+                    <div class="price-range">
+                        💰 Faixa de preço: R$${brecho.precoMin} - R$${brecho.precoMax}
+                    </div>
+                    
+                    <div>
+                        <span class="badge">👕 ${brecho.tiposPecas}</span>
+                        <span class="badge">🎁 ${brecho.doacoes}</span>
+                    </div>
+                    
+                    <div class="contact-btns">
+                        <a href="${whatsappLink}" target="_blank" class="contact-btn whatsapp-btn">💬 WhatsApp</a>
+                        ${websiteBtn}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Função de busca
+        function searchBrechos() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                document.getElementById('resultsHeader').textContent = 'Digite algo na busca para ver os brechós';
+                document.getElementById('cardsContainer').innerHTML = '<div class="no-results">Use a busca acima para encontrar brechós</div>';
+                Object.values(markers).forEach(marker => map.removeLayer(marker));
+                return;
             }
             
-            // Criar novo marcador com ícone personalizado
-            const customIcon = L.divIcon({
-                className: 'custom-marker',
-                html: '<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.3);"></div>',
-                iconSize: [26, 26],
-                iconAnchor: [13, 13]
+            const results = brechosData.filter(brecho => {
+                return brecho.nome.toLowerCase().includes(searchTerm) ||
+                       brecho.bairro.toLowerCase().includes(searchTerm) ||
+                       brecho.endereco.toLowerCase().includes(searchTerm) ||
+                       brecho.caracteristicas.some(c => c.toLowerCase().includes(searchTerm)) ||
+                       brecho.doacoes.toLowerCase().includes(searchTerm);
             });
             
-            currentMarker = L.marker([lat, lng], { icon: customIcon }).addTo(map);
-            
-            // Atualizar campos de coordenadas
-            document.getElementById('latitude').value = lat.toFixed(6);
-            document.getElementById('longitude').value = lng.toFixed(6);
-        }
-
-        // Evento de clique no mapa
-        map.on('click', function(e) {
-            const { lat, lng } = e.latlng;
-            addMarker(lat, lng);
-        });
-
-        // Função para mostrar mensagens de status
-        function showStatus(message, type) {
-            const statusElement = document.getElementById('statusMessage');
-            statusElement.textContent = message;
-            statusElement.className = status-message ${type} show;
-            
-            setTimeout(() => {
-                statusElement.classList.remove('show');
-            }, 4000);
-        }
-
-        // Função para salvar dados no Firebase
-async function saveToFirebase(data) {
-    try {
-        // Adicione esta verificação para garantir que o Firebase está pronto
-        if (!db) {
-            showStatus('Erro: Firebase não está configurado. Tente novamente mais tarde.', 'error');
-            throw new Error('Firebase não está configurado');
-        }
-
-        const docRef = await db.collection('comments').add({
-            ...data,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        console.log('Documento salvo com ID:', docRef.id);
-        return docRef.id;
-    } catch (error) {
-        console.error('Erro ao salvar no Firebase:', error);
-        throw error;
-    }
-}
-        // Manipular envio do formulário
-        document.getElementById('commentForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const submitBtn = document.getElementById('submitBtn');
-            const comment = document.getElementById('comment').value.trim();
-            const latitude = parseFloat(document.getElementById('latitude').value);
-            const longitude = parseFloat(document.getElementById('longitude').value);
-            
-            // Validação
-            if (!comment) {
-                showStatus('Por favor, escreva um comentário', 'error');
+            if (results.length === 0) {
+                document.getElementById('resultsHeader').textContent = 'Nenhum brechó encontrado';
+                document.getElementById('cardsContainer').innerHTML = '<div class="no-results">Não encontramos brechós com esse critério. Tente buscar por: nome, bairro, "doações" ou "troca"</div>';
+                Object.values(markers).forEach(marker => map.removeLayer(marker));
                 return;
             }
             
-            if (!latitude || !longitude) {
-                showStatus('Por favor, clique no mapa para selecionar uma localização', 'error');
-                return;
-            }
+            document.getElementById('resultsHeader').textContent = `${results.length} brechó(s) encontrado(s)`;
             
-            // Desabilitar botão durante o envio
-            submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ Enviando...';
+            const cardsHTML = results.map(brecho => createCard(brecho)).join('');
+            document.getElementById('cardsContainer').innerHTML = cardsHTML;
             
-            try {
-                const data = {
-                    comment: comment,
-                    latitude: latitude,
-                    longitude: longitude,
-                    userAgent: navigator.userAgent,
-                    timestamp: new Date().toISOString()
-                };
-                
-                await saveToFirebase(data);
-                
-                showStatus('✅ Comentário salvo com sucesso!', 'success');
-                
-                // Limpar formulário
-                document.getElementById('comment').value = '';
-                document.getElementById('latitude').value = '';
-                document.getElementById('longitude').value = '';
-                
-                // Remover marcador do mapa
-                if (currentMarker) {
-                    map.removeLayer(currentMarker);
-                    currentMarker = null;
-                }
-                
-            } catch (error) {
-                console.error('Erro:', error);
-                showStatus('❌ Erro ao salvar. Verifique a configuração do Firebase.', 'error');
-            } finally {
-                // Reabilitar botão
-                submitBtn.disabled = false;
-                submitBtn.textContent = '🚀 Enviar Comentário';
-            }
-        });
-
-        // Tentar obter localização do usuário
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    map.setView([lat, lng], 13);
-                },
-                function(error) {
-                    console.log('Erro ao obter localização:', error);
-                    // Manter São Paulo como centro padrão
-                }
-            );
+            addMarkers(results);
         }
 
-        // Adicionar animação de carregamento ao mapa
-        map.whenReady(function() {
-            console.log('Mapa carregado com sucesso');
+        // Busca ao pressionar Enter
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchBrechos();
+            }
         });
+
+        // Adicionar todos os marcadores inicialmente (ocultos)
+        // Os cards só aparecem após busca
+        console.log('Mapa carregado! Use a busca para encontrar brechós.');
     </script>
 </body>
-
 </html>
+
 
