@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulário com Mapa</title>
     
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
     
-    <!-- Firebase -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"></script>
     
@@ -292,82 +290,28 @@
         </div>
     </div>
 
-    <!-- Leaflet JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     
     <script>
-        // CONFIGURAÇÃO DO FIREBASE
-        // O código foi modificado para buscar as credenciais da API /api/firebaseConfig
-    
-        let db; // Torne a variável `db` global ou acessível
-    
-        // Função ASSÍNCRONA para buscar as credenciais e inicializar o Firebase
-        async function initializeFirebase() {
-            try {
-                // Requisição para a API que criamos no Vercel
-                const response = await fetch('/api/firebaseConfig');
-                const firebaseConfig = await response.json();
-                
-                // Inicializa o Firebase com as credenciais obtidas
-                firebase.initializeApp(firebaseConfig);
-                
-                // Atribui a instância do Firestore à variável `db`
-                db = firebase.firestore();
-                
-                console.log('Firebase e Firestore inicializados com sucesso!');
-    
-            } catch (error) {
-                console.error('Erro na inicialização do Firebase:', error);
-                // Exibe erro na tela se a API não funcionar ou as chaves estiverem erradas
-                showStatus('Erro: Verifique se as variáveis de ambiente no Vercel estão corretas.', 'error');
-            }
+        // Leaflet JS //
+        // Variáveis globais necessárias para Leaflet e Firebase
+        let db; 
+        let map; // AGORA GLOBAL: Armazena a instância do mapa
+        let currentMarker = null; // AGORA GLOBAL: Armazena o marcador no mapa
+
+        // --- FUNÇÕES DE UTILIDADE ---
+
+        // Função para mostrar mensagens de status
+        function showStatus(message, type) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = message;
+            statusElement.className = `status-message ${type} show`;
+            
+            setTimeout(() => {
+                statusElement.classList.remove('show');
+            }, 4000);
         }
-    
-        // Adicionando a chamada da função logo após a definição
-        initializeFirebase();
-    
-        // Inicializar o mapa (CÓDIGO EXISTENTE CONTINUA AQUI)
-        const map = L.map('map').setView([-23.5505, -46.6333], 10); 
-    
-        // ... O restante do código do mapa e das funções continua logo abaixo ...
         
-        // CORREÇÃO: A função saveToFirebase precisa garantir que DB foi inicializado
-        async function saveToFirebase(data) {
-            try {
-                if (!db) {
-                    // Se DB não foi inicializado (por algum erro anterior)
-                    throw new Error('Firebase não está configurado. Tente novamente mais tarde.');
-                }
-                
-                const docRef = await db.collection('comments').add({
-                    ...data,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                console.log('Documento salvo com ID:', docRef.id);
-                return docRef.id;
-            } catch (error) {
-                console.error('Erro ao salvar no Firebase:', error);
-                throw error;
-            }
-        }
-
-    // Chama a função de inicialização quando a página carrega
-    initializeFirebase();
-    
-
-        // Inicializar o mapa
-        const map = L.map('map').setView([-23.5505, -46.6333], 10); // São Paulo como centro inicial
-
-        // Adicionar camada do OpenStreetMap
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors',
-            maxZoom: 19
-        }).addTo(map);
-
-        // Variável para armazenar o marcador atual
-        let currentMarker = null;
-
         // Função para adicionar marcador no mapa
         function addMarker(lat, lng) {
             // Remover marcador anterior se existir
@@ -390,28 +334,11 @@
             document.getElementById('longitude').value = lng.toFixed(6);
         }
 
-        // Evento de clique no mapa
-        map.on('click', function(e) {
-            const { lat, lng } = e.latlng;
-            addMarker(lat, lng);
-        });
-
-        // Função para mostrar mensagens de status
-        function showStatus(message, type) {
-            const statusElement = document.getElementById('statusMessage');
-            statusElement.textContent = message;
-            statusElement.className = `status-message ${type} show`;
-            
-            setTimeout(() => {
-                statusElement.classList.remove('show');
-            }, 4000);
-        }
-
         // Função para salvar dados no Firebase
         async function saveToFirebase(data) {
             try {
                 if (!db) {
-                    throw new Error('Firebase não está configurado');
+                    throw new Error('Firebase não está configurado. Tente novamente mais tarde.');
                 }
                 
                 const docRef = await db.collection('comments').add({
@@ -427,7 +354,75 @@
             }
         }
 
-        // Manipular envio do formulário
+        // --- FUNÇÃO DE INICIALIZAÇÃO DO MAPA (SÓ RODA DEPOIS DO FIREBASE) ---
+
+        function initializeMap() {
+            // Inicializar o mapa com a variável GLOBAL 'map'
+            map = L.map('map').setView([-23.5505, -46.6333], 10); // São Paulo como centro inicial
+
+            // Adicionar camada do OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            // Evento de clique no mapa
+            map.on('click', function(e) {
+                const { lat, lng } = e.latlng;
+                addMarker(lat, lng);
+            });
+
+            // Tentar obter localização do usuário
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        map.setView([lat, lng], 13);
+                    },
+                    function(error) {
+                        console.log('Erro ao obter localização:', error);
+                        // Manter São Paulo como centro padrão
+                    }
+                );
+            }
+
+            // Adicionar animação de carregamento ao mapa
+            map.whenReady(function() {
+                console.log('Mapa carregado com sucesso');
+            });
+        }
+
+        // --- FUNÇÃO PRINCIPAL: INICIALIZA O FIREBASE ---
+
+        // Função ASSÍNCRONA para buscar as credenciais e inicializar o Firebase
+        async function initializeFirebase() {
+            try {
+                // Requisição para a API que criamos no Vercel
+                const response = await fetch('/api/firebaseConfig');
+                const firebaseConfig = await response.json();
+                
+                // Inicializa o Firebase com as credenciais obtidas
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+                
+                console.log('Firebase e Firestore inicializados com sucesso!');
+
+                // CHAMA O MAPA AQUI: Garante que ele só carregue após o Firebase estar pronto.
+                initializeMap(); 
+
+            } catch (error) {
+                console.error('Erro na inicialização do Firebase:', error);
+                // Exibe erro na tela se a API não funcionar ou as chaves estiverem erradas
+                showStatus('Erro: Verifique se as variáveis de ambiente no Vercel estão corretas.', 'error');
+            }
+        }
+
+        // Inicia o processo principal
+        initializeFirebase();
+        
+        // --- MANIPULAÇÃO DO FORMULÁRIO (DEVE ESTAR FORA DAS FUNÇÕES DE INICIALIZAÇÃO) ---
+        
         document.getElementById('commentForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -485,27 +480,6 @@
             }
         });
 
-        // Tentar obter localização do usuário
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    map.setView([lat, lng], 13);
-                },
-                function(error) {
-                    console.log('Erro ao obter localização:', error);
-                    // Manter São Paulo como centro padrão
-                }
-            );
-        }
-
-        // Adicionar animação de carregamento ao mapa
-        map.whenReady(function() {
-            console.log('Mapa carregado com sucesso');
-        });
     </script>
 </body>
 </html>
-
-
