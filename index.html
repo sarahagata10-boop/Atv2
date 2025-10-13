@@ -297,52 +297,60 @@
     
     <script>
         // CONFIGURAÇÃO DO FIREBASE
-        // IMPORTANTE: Substitua pela sua configuração do Firebase
-
-        // Inicializar Firebase
+        // O código foi modificado para buscar as credenciais da API /api/firebaseConfig
     
-    let db; // Torne a variável `db` global ou acessível
-
-    async function initializeFirebase() {
-        try {
-            const response = await fetch('/api/firebaseConfig');
-            const firebaseConfig = await response.json();
-            
-            firebase.initializeApp(firebaseConfig);
-            
-            // Atribua a instância do Firestore à variável `db`
-            db = firebase.firestore();
-            
-            console.log('Firebase e Firestore inicializados com sucesso!');
-
-            // Agora você pode chamar a função de salvar com segurança
-            // Exemplo:
-            // const dataToSave = { name: 'João', message: 'Olá, mundo!' };
-            // await saveToFirebase(dataToSave);
-        } catch (error) {
-            console.error('Erro na inicialização do Firebase:', error);
-        }
-    }
-
-    async function saveToFirebase(data) {
-        try {
-            if (!db) {
-                // Se a variável `db` ainda não foi inicializada, chame a função e espere
-                await initializeFirebase();
+        let db; // Torne a variável `db` global ou acessível
+    
+        // Função ASSÍNCRONA para buscar as credenciais e inicializar o Firebase
+        async function initializeFirebase() {
+            try {
+                // Requisição para a API que criamos no Vercel
+                const response = await fetch('/api/firebaseConfig');
+                const firebaseConfig = await response.json();
+                
+                // Inicializa o Firebase com as credenciais obtidas
+                firebase.initializeApp(firebaseConfig);
+                
+                // Atribui a instância do Firestore à variável `db`
+                db = firebase.firestore();
+                
+                console.log('Firebase e Firestore inicializados com sucesso!');
+    
+            } catch (error) {
+                console.error('Erro na inicialização do Firebase:', error);
+                // Exibe erro na tela se a API não funcionar ou as chaves estiverem erradas
+                showStatus('Erro: Verifique se as variáveis de ambiente no Vercel estão corretas.', 'error');
             }
-            
-            const docRef = await db.collection('comments').add({
-                ...data,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            
-            console.log('Documento salvo com ID:', docRef.id);
-            return docRef.id;
-        } catch (error) {
-            console.error('Erro ao salvar no Firebase:', error);
-            throw error;
         }
-    }
+    
+        // Adicionando a chamada da função logo após a definição
+        initializeFirebase();
+    
+        // Inicializar o mapa (CÓDIGO EXISTENTE CONTINUA AQUI)
+        const map = L.map('map').setView([-23.5505, -46.6333], 10); 
+    
+        // ... O restante do código do mapa e das funções continua logo abaixo ...
+        
+        // CORREÇÃO: A função saveToFirebase precisa garantir que DB foi inicializado
+        async function saveToFirebase(data) {
+            try {
+                if (!db) {
+                    // Se DB não foi inicializado (por algum erro anterior)
+                    throw new Error('Firebase não está configurado. Tente novamente mais tarde.');
+                }
+                
+                const docRef = await db.collection('comments').add({
+                    ...data,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                console.log('Documento salvo com ID:', docRef.id);
+                return docRef.id;
+            } catch (error) {
+                console.error('Erro ao salvar no Firebase:', error);
+                throw error;
+            }
+        }
 
     // Chama a função de inicialização quando a página carrega
     initializeFirebase();
@@ -499,4 +507,5 @@
     </script>
 </body>
 </html>
+
 
